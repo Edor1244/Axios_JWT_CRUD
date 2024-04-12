@@ -1,0 +1,80 @@
+Puntos importantes a tomar en cuenta cuando se busque hacer un CRUD con AJAX, SQLite y EXPRESS, es necesario hacer el 
+<------initDB.js------->
+que hace el init.js: aqui es donde nosotros haremos el script para poder hacer nuestras tablas en nuestra base de datos,  el "objeto.sqlite" es la base de datos que se nos creara.
+
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('./db/objeto.sqlite');
+
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS empleados (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    puesto TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE
+  )`);
+});
+
+db.close();
+
+
+<-------Objetos.ejs------>
+para que sirve objetos.ejs:aqui nosotros es donde ponemos la parte de la vista, esta el HTML con el cual trabajaremos.
+
+<------Server.js----->
+
+en el cual tenemos que importar las rutas de nuestras "APPS" que usaremos tanto GET como POST, tambien el motor de plantilla y el puerto por el cual se va a iniciar el servidor
+
+<-----app.js------>
+
+que hacen nuestras apps:Aqui declararemos las funciones que se invocaran mediante el URL mediante AJAX en el cual recibira la informacion que extraigamos de nuestro objeto.js lo podremos hacer con (response)
+const usuarios = response.usuarios;
+
+<-----Objetos.js------>
+
+que hacen los Objetos.js aqui es donde declaramos nuestras rutas con las funciones para obtener la informacion de la base de datos, en si los Objetos.Js son la API pero para hacer las validaciones de JWT es necesario un MIDDLEWAR.js
+se declara asi: 
+const {checkToken} = require('../middleware');
+
+se incluye de esta manera dentro de los parametros de la funcion en la cual queremos que necesite de una caracteristica para usarse:
+router.put('/api/:id', checkToken, async (req, res) => { --Funcion actualizar id---});
+
+
+
+<-----MIDDLEWARE.js------->
+
+que hace el middleware:Este obtiene del Header el Token que tenemos y lo decodifica con nuestro TOKEN.KEY que tenemos como variables de entorno en .env
+
+
+esto esta en el package.json que es donde se declaran las dependencias del proyecto que usamos:
+{
+  "name": "aplicacion-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "node server.js"
+  },
+  "keywords": [
+    "Ajax",
+    "ejs"
+  ],
+  "author": "Felipe Hernandez P.",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "jwt-simple": "^0.5.6",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.5.45",
+    "sqlite3": "^5.1.7"
+  }
+}
+
+Los scripts es la parte donde declaramos el comando para ver de que forma se inciara, en este caso yo le instale nodemon para que no tenga que andar cerrando el server.
+
+
